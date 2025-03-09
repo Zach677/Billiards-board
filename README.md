@@ -85,7 +85,8 @@ npm start
 ### 注意事项
 
 - 项目需要Node.js 20或更高版本
-- 已配置vercel.json文件以确保正确的Node.js版本和构建设置
+- 已配置`.node-version`和`.nvmrc`文件以指定Node.js版本
+- 已配置vercel.json文件以确保正确的构建设置
 
 ## 许可证
 

@@ -8,6 +8,7 @@ interface PlayerProps {
   initialScore: number
   onScoreChange: (newScore: number, scoreType: ScoreType) => void
   renderNameSection?: () => React.ReactNode
+  isCompact?: boolean
 }
 
 export default function Player({
@@ -15,6 +16,7 @@ export default function Player({
   initialScore,
   onScoreChange,
   renderNameSection,
+  isCompact = false,
 }: PlayerProps) {
   const [score, setScore] = useState(initialScore)
 
@@ -30,6 +32,64 @@ export default function Player({
     }
   }
 
+  // 紧凑模式下的布局
+  if (isCompact) {
+    return (
+      <div className="bg-white p-3 rounded-lg shadow-md">
+        <div className="flex justify-between items-center mb-2">
+          {renderNameSection ? (
+            renderNameSection()
+          ) : (
+            <h2 className="text-base sm:text-lg font-bold text-gray-800">
+              {name}
+            </h2>
+          )}
+        </div>
+
+        <div className="text-center mb-3">
+          <span className="text-4xl sm:text-5xl font-bold text-blue-600">
+            {score}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 mb-2">
+          <button
+            onClick={() => handleScoreChange(1, '犯规')}
+            className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition font-medium text-xs sm:text-sm"
+          >
+            犯规 +1
+          </button>
+          <button
+            onClick={() => handleScoreChange(4, '普胜')}
+            className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition font-medium text-xs sm:text-sm"
+          >
+            普胜 +4
+          </button>
+          <button
+            onClick={() => handleScoreChange(7, '小金')}
+            className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition font-medium text-xs sm:text-sm"
+          >
+            小金 +7
+          </button>
+          <button
+            onClick={() => handleScoreChange(10, '大金')}
+            className="bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition font-medium text-xs sm:text-sm"
+          >
+            大金 +10
+          </button>
+        </div>
+
+        <button
+          onClick={() => handleScoreChange(4, '黄金9')}
+          className="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition font-medium text-xs sm:text-sm"
+        >
+          黄金9 +4
+        </button>
+      </div>
+    )
+  }
+
+  // 标准模式下的布局
   return (
     <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-2 sm:mb-3">

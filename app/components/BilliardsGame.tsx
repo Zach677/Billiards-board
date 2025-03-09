@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Player, { ScoreType } from './Player'
 
 // 定义统计类型
@@ -34,6 +34,9 @@ interface HistoryEntry {
 type GameMode = '两人' | '三人'
 
 export default function BilliardsGame() {
+  // 屏幕方向状态
+  const [isLandscape, setIsLandscape] = useState(false)
+
   // 游戏模式
   const [gameMode, setGameMode] = useState<GameMode>('两人')
 
@@ -48,6 +51,22 @@ export default function BilliardsGame() {
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [editingName, setEditingName] = useState<number | null>(null)
   const [showModeSelector, setShowModeSelector] = useState(false)
+
+  // 检测屏幕方向
+  useEffect(() => {
+    const checkOrientation = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight)
+    }
+
+    // 初始检查
+    checkOrientation()
+
+    // 监听窗口大小变化
+    window.addEventListener('resize', checkOrientation)
+
+    // 清理监听器
+    return () => window.removeEventListener('resize', checkOrientation)
+  }, [])
 
   // 获取当前活跃玩家
   const getActivePlayers = () => {
@@ -149,7 +168,7 @@ export default function BilliardsGame() {
   // 渲染统计信息
   const renderStats = (stats: Stats) => {
     return (
-      <div className="bg-gray-50 p-3 rounded-lg text-sm">
+      <div className="bg-gray-50 p-2 sm:p-3 rounded-lg text-sm">
         <div className="grid grid-cols-5 gap-1 text-center">
           <div>
             <div className="font-medium text-red-600 text-xs sm:text-sm">
@@ -349,38 +368,140 @@ export default function BilliardsGame() {
     )
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-10">
-      <div className="container mx-auto px-3 sm:px-4 max-w-6xl">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-8 gap-3 sm:gap-0">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center sm:text-left">
-            九球追分记分板
-          </h1>
-          <button
-            onClick={() => setShowModeSelector(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition w-full sm:w-auto"
+  // 渲染控制按钮
+  const renderControls = () => {
+    return (
+      <div className="grid grid-cols-2 gap-3 sm:flex sm:justify-center sm:gap-4">
+        <button
+          onClick={handleUndoLastAction}
+          disabled={history.length === 0}
+          className={`py-3 px-4 sm:px-6 rounded-lg flex items-center justify-center font-medium transition text-sm sm:text-base ${
+            history.length === 0
+              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-1 sm:mr-2"
+            viewBox="0 0 20 20"
+            fill="currentColor"
           >
-            <span>{gameMode}模式</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+            <path
+              fillRule="evenodd"
+              d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+          撤销
+        </button>
+        <button
+          onClick={() => setShowResetConfirm(true)}
+          disabled={players.every((p) => p.score === 0)}
+          className={`py-3 px-4 sm:px-6 rounded-lg flex items-center justify-center font-medium transition text-sm sm:text-base ${
+            players.every((p) => p.score === 0)
+              ? 'bg-red-100 text-red-300 cursor-not-allowed'
+              : 'bg-red-100 text-red-600 hover:bg-red-200'
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-1 sm:mr-2"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+              clipRule="evenodd"
+            />
+          </svg>
+          重置
+        </button>
+      </div>
+    )
+  }
+
+  // 渲染标题和模式切换按钮
+  const renderHeader = () => {
+    return (
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center sm:text-left">
+          九球追分记分板
+        </h1>
+        <button
+          onClick={() => setShowModeSelector(true)}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition w-full sm:w-auto"
+        >
+          <span>{gameMode}模式</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+    )
+  }
+
+  // 横屏布局
+  const renderLandscapeLayout = () => {
+    const activePlayers = getActivePlayers()
+
+    return (
+      <div className="flex flex-col h-full">
+        {renderHeader()}
+
+        <div className="flex flex-1 gap-4">
+          {/* 左侧：玩家记分板 */}
+          <div className="flex-1 grid grid-cols-1 gap-3 auto-rows-min">
+            {activePlayers.map((player, index) => (
+              <div key={index} className="flex gap-3">
+                <div className="flex-1">
+                  <Player
+                    name={player.name}
+                    initialScore={player.score}
+                    onScoreChange={(newScore, scoreType) =>
+                      handlePlayerScoreChange(index, newScore, scoreType)
+                    }
+                    renderNameSection={() =>
+                      renderPlayerName(player.name, index)
+                    }
+                    isCompact={true}
+                  />
+                </div>
+                <div className="w-24 sm:w-32">{renderStats(player.stats)}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* 右侧：控制按钮 */}
+          <div className="w-24 sm:w-32 flex flex-col justify-start gap-3">
+            {renderControls()}
+          </div>
         </div>
+      </div>
+    )
+  }
+
+  // 竖屏布局
+  const renderPortraitLayout = () => {
+    return (
+      <>
+        {renderHeader()}
 
         {/* 记分板区域 */}
         <div
           className={`grid grid-cols-1 ${
             gameMode === '两人' ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
-          } gap-4 sm:gap-6 mb-6 sm:mb-8`}
+          } gap-4 sm:gap-6 mb-6`}
         >
           {getActivePlayers().map((player, index) => (
             <div key={index}>
@@ -398,54 +519,15 @@ export default function BilliardsGame() {
         </div>
 
         {/* 控制按钮 */}
-        <div className="grid grid-cols-2 gap-3 sm:flex sm:justify-center sm:gap-4">
-          <button
-            onClick={handleUndoLastAction}
-            disabled={history.length === 0}
-            className={`py-4 sm:py-3 px-4 sm:px-8 rounded-lg flex items-center justify-center font-medium transition text-base ${
-              history.length === 0
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-            撤销
-          </button>
-          <button
-            onClick={() => setShowResetConfirm(true)}
-            disabled={players.every((p) => p.score === 0)}
-            className={`py-4 sm:py-3 px-4 sm:px-8 rounded-lg flex items-center justify-center font-medium transition text-base ${
-              players.every((p) => p.score === 0)
-                ? 'bg-red-100 text-red-300 cursor-not-allowed'
-                : 'bg-red-100 text-red-600 hover:bg-red-200'
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                clipRule="evenodd"
-              />
-            </svg>
-            重置
-          </button>
-        </div>
+        {renderControls()}
+      </>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 px-3 sm:px-4">
+      <div className="container mx-auto max-w-6xl h-full">
+        {isLandscape ? renderLandscapeLayout() : renderPortraitLayout()}
 
         {/* 对话框 */}
         {renderResetConfirm()}
