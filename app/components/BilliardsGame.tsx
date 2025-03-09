@@ -37,6 +37,9 @@ export default function BilliardsGame() {
   // 屏幕方向状态
   const [isLandscape, setIsLandscape] = useState(false)
 
+  // 是否是小屏幕设备
+  const [isSmallScreen, setIsSmallScreen] = useState(false)
+
   // 游戏模式
   const [gameMode, setGameMode] = useState<GameMode>('两人')
 
@@ -52,20 +55,21 @@ export default function BilliardsGame() {
   const [editingName, setEditingName] = useState<number | null>(null)
   const [showModeSelector, setShowModeSelector] = useState(false)
 
-  // 检测屏幕方向
+  // 检测屏幕方向和大小
   useEffect(() => {
-    const checkOrientation = () => {
+    const checkScreen = () => {
       setIsLandscape(window.innerWidth > window.innerHeight)
+      setIsSmallScreen(window.innerWidth < 640 || window.innerHeight < 480)
     }
 
     // 初始检查
-    checkOrientation()
+    checkScreen()
 
     // 监听窗口大小变化
-    window.addEventListener('resize', checkOrientation)
+    window.addEventListener('resize', checkScreen)
 
     // 清理监听器
-    return () => window.removeEventListener('resize', checkOrientation)
+    return () => window.removeEventListener('resize', checkScreen)
   }, [])
 
   // 获取当前活跃玩家
@@ -166,39 +170,68 @@ export default function BilliardsGame() {
   }
 
   // 渲染统计信息
-  const renderStats = (stats: Stats) => {
+  const renderStats = (stats: Stats, mini = false) => {
+    if (mini) {
+      return (
+        <div className="bg-gray-50 p-1 rounded text-xs">
+          <div className="grid grid-cols-5 gap-0 text-center">
+            <div>
+              <div className="font-medium text-red-600 text-[8px]">犯</div>
+              <div className="font-bold">{stats.犯规}</div>
+            </div>
+            <div>
+              <div className="font-medium text-green-600 text-[8px]">普</div>
+              <div className="font-bold">{stats.普胜}</div>
+            </div>
+            <div>
+              <div className="font-medium text-blue-600 text-[8px]">小</div>
+              <div className="font-bold">{stats.小金}</div>
+            </div>
+            <div>
+              <div className="font-medium text-purple-600 text-[8px]">大</div>
+              <div className="font-bold">{stats.大金}</div>
+            </div>
+            <div>
+              <div className="font-medium text-yellow-600 text-[8px]">9</div>
+              <div className="font-bold">{stats.黄金9}</div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     return (
-      <div className="bg-gray-50 p-2 sm:p-3 rounded-lg text-sm">
+      <div className="bg-gray-50 p-1 sm:p-2 rounded-lg text-sm">
         <div className="grid grid-cols-5 gap-1 text-center">
           <div>
-            <div className="font-medium text-red-600 text-xs sm:text-sm">
+            <div className="font-medium text-red-600 text-[10px] sm:text-xs">
               犯规
             </div>
-            <div className="text-base sm:text-lg font-bold">{stats.犯规}</div>
+            <div className="text-sm sm:text-base font-bold">{stats.犯规}</div>
           </div>
           <div>
-            <div className="font-medium text-green-600 text-xs sm:text-sm">
+            <div className="font-medium text-green-600 text-[10px] sm:text-xs">
               普胜
             </div>
-            <div className="text-base sm:text-lg font-bold">{stats.普胜}</div>
+            <div className="text-sm sm:text-base font-bold">{stats.普胜}</div>
           </div>
           <div>
-            <div className="font-medium text-blue-600 text-xs sm:text-sm">
+            <div className="font-medium text-blue-600 text-[10px] sm:text-xs">
               小金
             </div>
-            <div className="text-base sm:text-lg font-bold">{stats.小金}</div>
+            <div className="text-sm sm:text-base font-bold">{stats.小金}</div>
           </div>
           <div>
-            <div className="font-medium text-purple-600 text-xs sm:text-sm">
+            <div className="font-medium text-purple-600 text-[10px] sm:text-xs">
               大金
             </div>
-            <div className="text-base sm:text-lg font-bold">{stats.大金}</div>
+            <div className="text-sm sm:text-base font-bold">{stats.大金}</div>
           </div>
           <div>
-            <div className="font-medium text-yellow-600 text-xs sm:text-sm">
+            <div className="font-medium text-yellow-600 text-[10px] sm:text-xs">
               黄金9
             </div>
-            <div className="text-base sm:text-lg font-bold">{stats.黄金9}</div>
+            <div className="text-sm sm:text-base font-bold">{stats.黄金9}</div>
           </div>
         </div>
       </div>
@@ -211,21 +244,21 @@ export default function BilliardsGame() {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white p-5 rounded-lg shadow-lg w-full max-w-md">
-          <h3 className="text-xl font-bold mb-4">确认重置</h3>
-          <p className="mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
+          <h3 className="text-lg sm:text-xl font-bold mb-3">确认重置</h3>
+          <p className="mb-4 text-sm sm:text-base">
             确定要重置所有分数和统计数据吗？此操作无法撤销。
           </p>
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-2">
             <button
               onClick={() => setShowResetConfirm(false)}
-              className="px-5 py-3 bg-gray-200 rounded-md hover:bg-gray-300 transition text-base font-medium"
+              className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 transition text-sm font-medium"
             >
               取消
             </button>
             <button
               onClick={handleResetGame}
-              className="px-5 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition text-base font-medium"
+              className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm font-medium"
             >
               确认重置
             </button>
@@ -244,14 +277,14 @@ export default function BilliardsGame() {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white p-5 rounded-lg shadow-lg w-full max-w-md">
-          <h3 className="text-xl font-bold mb-4">修改玩家名称</h3>
+        <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
+          <h3 className="text-lg sm:text-xl font-bold mb-3">修改玩家名称</h3>
           <form
             onSubmit={(e) => {
               e.preventDefault()
               if (inputRef) handleNameChange(editingName, inputRef.value)
             }}
-            className="mb-4"
+            className="mb-2"
           >
             <input
               type="text"
@@ -259,20 +292,20 @@ export default function BilliardsGame() {
                 inputRef = el
               }}
               defaultValue={currentName}
-              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-5 text-base"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 text-sm"
               onFocus={(e) => e.target.select()}
             />
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setEditingName(null)}
-                className="px-5 py-3 bg-gray-200 rounded-md hover:bg-gray-300 transition text-base font-medium"
+                className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 transition text-sm font-medium"
               >
                 取消
               </button>
               <button
                 type="submit"
-                className="px-5 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-base font-medium"
+                className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm font-medium"
               >
                 保存
               </button>
@@ -289,53 +322,53 @@ export default function BilliardsGame() {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white p-5 rounded-lg shadow-lg w-full max-w-md">
-          <h3 className="text-xl font-bold mb-4">选择游戏模式</h3>
-          <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
+          <h3 className="text-lg sm:text-xl font-bold mb-3">选择游戏模式</h3>
+          <div className="grid grid-cols-2 gap-3 mb-4">
             <button
               onClick={() => switchGameMode('两人')}
-              className={`p-4 rounded-lg border-2 flex flex-col items-center ${
+              className={`p-3 rounded-lg border-2 flex flex-col items-center ${
                 gameMode === '两人'
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
               }`}
             >
-              <div className="flex gap-2 mb-2">
-                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+              <div className="flex gap-1 mb-1">
+                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs">
                   1
                 </div>
-                <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">
+                <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xs">
                   2
                 </div>
               </div>
-              <span className="font-medium">两人模式</span>
+              <span className="text-sm font-medium">两人模式</span>
             </button>
             <button
               onClick={() => switchGameMode('三人')}
-              className={`p-4 rounded-lg border-2 flex flex-col items-center ${
+              className={`p-3 rounded-lg border-2 flex flex-col items-center ${
                 gameMode === '三人'
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
               }`}
             >
-              <div className="flex gap-2 mb-2">
-                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+              <div className="flex gap-1 mb-1">
+                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs">
                   1
                 </div>
-                <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">
+                <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xs">
                   2
                 </div>
-                <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold">
+                <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-xs">
                   3
                 </div>
               </div>
-              <span className="font-medium">三人模式</span>
+              <span className="text-sm font-medium">三人模式</span>
             </button>
           </div>
           <div className="flex justify-end">
             <button
               onClick={() => setShowModeSelector(false)}
-              className="px-5 py-3 bg-gray-200 rounded-md hover:bg-gray-300 transition text-base font-medium"
+              className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 transition text-sm font-medium"
             >
               关闭
             </button>
@@ -348,8 +381,10 @@ export default function BilliardsGame() {
   // 渲染玩家名字和编辑按钮
   const renderPlayerName = (name: string, playerIndex: number) => {
     return (
-      <div className="flex items-center gap-2">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-800">{name}</h2>
+      <div className="flex items-center gap-1">
+        <h2 className="text-sm sm:text-base font-bold text-gray-800 truncate">
+          {name}
+        </h2>
         <button
           onClick={() => setEditingName(playerIndex)}
           className="text-gray-500 hover:text-blue-500 transition p-1"
@@ -357,7 +392,7 @@ export default function BilliardsGame() {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-4 w-4"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -371,11 +406,11 @@ export default function BilliardsGame() {
   // 渲染控制按钮
   const renderControls = () => {
     return (
-      <div className="grid grid-cols-2 gap-3 sm:flex sm:justify-center sm:gap-4">
+      <div className="grid grid-cols-2 gap-2">
         <button
           onClick={handleUndoLastAction}
           disabled={history.length === 0}
-          className={`py-3 px-4 sm:px-6 rounded-lg flex items-center justify-center font-medium transition text-sm sm:text-base ${
+          className={`py-2 px-2 rounded flex items-center justify-center font-medium transition text-xs ${
             history.length === 0
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -383,7 +418,7 @@ export default function BilliardsGame() {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 mr-1 sm:mr-2"
+            className="h-4 w-4 mr-1"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -398,7 +433,7 @@ export default function BilliardsGame() {
         <button
           onClick={() => setShowResetConfirm(true)}
           disabled={players.every((p) => p.score === 0)}
-          className={`py-3 px-4 sm:px-6 rounded-lg flex items-center justify-center font-medium transition text-sm sm:text-base ${
+          className={`py-2 px-2 rounded flex items-center justify-center font-medium transition text-xs ${
             players.every((p) => p.score === 0)
               ? 'bg-red-100 text-red-300 cursor-not-allowed'
               : 'bg-red-100 text-red-600 hover:bg-red-200'
@@ -406,7 +441,7 @@ export default function BilliardsGame() {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 mr-1 sm:mr-2"
+            className="h-4 w-4 mr-1"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -425,18 +460,18 @@ export default function BilliardsGame() {
   // 渲染标题和模式切换按钮
   const renderHeader = () => {
     return (
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3 sm:gap-0">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center sm:text-left">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-1 sm:gap-0">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center sm:text-left">
           九球追分记分板
         </h1>
         <button
           onClick={() => setShowModeSelector(true)}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition w-full sm:w-auto"
+          className="flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition w-full sm:w-auto text-sm"
         >
           <span>{gameMode}模式</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-4 w-4"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -451,19 +486,39 @@ export default function BilliardsGame() {
     )
   }
 
-  // 横屏布局
-  const renderLandscapeLayout = () => {
+  // iPhone横屏特殊布局
+  const renderIPhoneLandscape = () => {
     const activePlayers = getActivePlayers()
 
     return (
       <div className="flex flex-col h-full">
-        {renderHeader()}
+        <div className="flex justify-between items-center mb-1">
+          <h1 className="text-lg font-bold text-gray-800">九球追分记分板</h1>
+          <button
+            onClick={() => setShowModeSelector(true)}
+            className="flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition text-xs"
+          >
+            <span>{gameMode}模式</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-3 w-3"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
 
-        <div className="flex flex-1 gap-4">
+        <div className="flex flex-1 gap-1">
           {/* 左侧：玩家记分板 */}
-          <div className="flex-1 grid grid-cols-1 gap-3 auto-rows-min">
+          <div className="flex-1 grid grid-cols-1 gap-1 auto-rows-min">
             {activePlayers.map((player, index) => (
-              <div key={index} className="flex gap-3">
+              <div key={index} className="flex gap-1">
                 <div className="flex-1">
                   <Player
                     name={player.name}
@@ -477,13 +532,58 @@ export default function BilliardsGame() {
                     isCompact={true}
                   />
                 </div>
-                <div className="w-24 sm:w-32">{renderStats(player.stats)}</div>
+                <div className="w-16">{renderStats(player.stats, true)}</div>
               </div>
             ))}
           </div>
 
           {/* 右侧：控制按钮 */}
-          <div className="w-24 sm:w-32 flex flex-col justify-start gap-3">
+          <div className="w-16 flex flex-col justify-start gap-1">
+            {renderControls()}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // 横屏布局
+  const renderLandscapeLayout = () => {
+    // 如果是小屏幕设备（如iPhone）使用特殊布局
+    if (isSmallScreen) {
+      return renderIPhoneLandscape()
+    }
+
+    const activePlayers = getActivePlayers()
+
+    return (
+      <div className="flex flex-col h-full">
+        {renderHeader()}
+
+        <div className="flex flex-1 gap-3">
+          {/* 左侧：玩家记分板 */}
+          <div className="flex-1 grid grid-cols-1 gap-2 auto-rows-min">
+            {activePlayers.map((player, index) => (
+              <div key={index} className="flex gap-2">
+                <div className="flex-1">
+                  <Player
+                    name={player.name}
+                    initialScore={player.score}
+                    onScoreChange={(newScore, scoreType) =>
+                      handlePlayerScoreChange(index, newScore, scoreType)
+                    }
+                    renderNameSection={() =>
+                      renderPlayerName(player.name, index)
+                    }
+                    isCompact={true}
+                  />
+                </div>
+                <div className="w-20 sm:w-24">{renderStats(player.stats)}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* 右侧：控制按钮 */}
+          <div className="w-20 sm:w-24 flex flex-col justify-start gap-2">
             {renderControls()}
           </div>
         </div>
@@ -501,7 +601,7 @@ export default function BilliardsGame() {
         <div
           className={`grid grid-cols-1 ${
             gameMode === '两人' ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
-          } gap-4 sm:gap-6 mb-6`}
+          } gap-2 sm:gap-4 mb-3 sm:mb-4`}
         >
           {getActivePlayers().map((player, index) => (
             <div key={index}>
@@ -513,7 +613,7 @@ export default function BilliardsGame() {
                 }
                 renderNameSection={() => renderPlayerName(player.name, index)}
               />
-              <div className="mt-2 sm:mt-3">{renderStats(player.stats)}</div>
+              <div className="mt-1 sm:mt-2">{renderStats(player.stats)}</div>
             </div>
           ))}
         </div>
@@ -525,7 +625,7 @@ export default function BilliardsGame() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 px-3 sm:px-4">
+    <div className="min-h-screen bg-gray-50 py-2 sm:py-4 px-2 sm:px-4">
       <div className="container mx-auto max-w-6xl h-full">
         {isLandscape ? renderLandscapeLayout() : renderPortraitLayout()}
 
