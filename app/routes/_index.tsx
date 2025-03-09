@@ -3,8 +3,8 @@ import BilliardsGame from '~/components/BilliardsGame'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: '九球追分记分板' },
-    { name: 'description', content: '一个简单易用的九球追分记分板应用' },
+    { title: '追分记分板' },
+    { name: 'description', content: '一个简单易用的追分记分板应用' },
   ]
 }
 

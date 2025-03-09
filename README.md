@@ -18,8 +18,7 @@
 - 普胜: +4分
 - 小金: +7分
 - 大金: +10分
-- 黄金9: +15分
-- 目标分数: 120分
+- 黄金9: +4分
 
 ## 技术栈
 
@@ -62,11 +61,31 @@ npm start
    - 普胜: +4分
    - 小金: +7分
    - 大金: +10分
-   - 黄金9: +15分
+   - 黄金9: +4分
 3. 点击"换人"按钮切换当前玩家
 4. 点击"撤销"按钮撤销上一步操作
 5. 点击"重置"按钮重新开始游戏
-6. 当一名玩家达到目标分数(120分)时，游戏结束并显示胜利者信息
+
+## 部署到Vercel
+
+这个项目可以直接部署到Vercel平台。
+
+### 一键部署
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyourusername%2Fbilliards-board)
+
+### 手动部署
+
+1. 将代码推送到GitHub仓库
+2. 在Vercel上创建新项目
+3. 导入GitHub仓库
+4. 使用默认设置，Vercel会自动检测Remix项目
+5. 点击"Deploy"按钮
+
+### 注意事项
+
+- 项目需要Node.js 20或更高版本
+- 已配置vercel.json文件以确保正确的Node.js版本和构建设置
 
 ## 许可证
 
