@@ -35,41 +35,45 @@ export default function Player({
   // 紧凑模式下的布局
   if (isCompact) {
     return (
-      <div className="bg-white p-2 rounded-lg shadow-md">
+      <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-md">
         <div className="flex justify-between items-center mb-1">
           {renderNameSection ? (
             renderNameSection()
           ) : (
-            <h2 className="text-sm font-bold text-gray-800">{name}</h2>
+            <h2 className="text-sm font-bold text-gray-800 dark:text-gray-100">
+              {name}
+            </h2>
           )}
         </div>
 
         <div className="text-center mb-2">
-          <span className="text-3xl font-bold text-blue-600">{score}</span>
+          <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+            {score}
+          </span>
         </div>
 
         <div className="grid grid-cols-2 gap-1 mb-1">
           <button
             onClick={() => handleScoreChange(1, '犯规')}
-            className="bg-red-500 text-white py-1 px-1 rounded hover:bg-red-600 transition font-medium text-xs"
+            className="bg-red-500 dark:bg-red-600 text-white py-1 px-1 rounded hover:bg-red-600 dark:hover:bg-red-700 transition font-medium text-xs"
           >
             犯+1
           </button>
           <button
             onClick={() => handleScoreChange(4, '普胜')}
-            className="bg-green-500 text-white py-1 px-1 rounded hover:bg-green-600 transition font-medium text-xs"
+            className="bg-green-500 dark:bg-green-600 text-white py-1 px-1 rounded hover:bg-green-600 dark:hover:bg-green-700 transition font-medium text-xs"
           >
             普+4
           </button>
           <button
             onClick={() => handleScoreChange(7, '小金')}
-            className="bg-blue-500 text-white py-1 px-1 rounded hover:bg-blue-600 transition font-medium text-xs"
+            className="bg-blue-500 dark:bg-blue-600 text-white py-1 px-1 rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition font-medium text-xs"
           >
             小+7
           </button>
           <button
             onClick={() => handleScoreChange(10, '大金')}
-            className="bg-purple-500 text-white py-1 px-1 rounded hover:bg-purple-600 transition font-medium text-xs"
+            className="bg-purple-500 dark:bg-purple-600 text-white py-1 px-1 rounded hover:bg-purple-600 dark:hover:bg-purple-700 transition font-medium text-xs"
           >
             大+10
           </button>
@@ -77,7 +81,7 @@ export default function Player({
 
         <button
           onClick={() => handleScoreChange(4, '黄金9')}
-          className="w-full bg-yellow-500 text-white py-1 px-1 rounded hover:bg-yellow-600 transition font-medium text-xs"
+          className="w-full bg-yellow-500 dark:bg-yellow-600 text-white py-1 px-1 rounded hover:bg-yellow-600 dark:hover:bg-yellow-700 transition font-medium text-xs"
         >
           黄金9 +4
         </button>
@@ -87,19 +91,19 @@ export default function Player({
 
   // 标准模式下的布局
   return (
-    <div className="bg-white p-2 sm:p-4 rounded-lg shadow-md">
+    <div className="bg-white dark:bg-gray-800 p-2 sm:p-4 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-1 sm:mb-2">
         {renderNameSection ? (
           renderNameSection()
         ) : (
-          <h2 className="text-base sm:text-lg font-bold text-gray-800">
+          <h2 className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-100">
             {name}
           </h2>
         )}
       </div>
 
       <div className="text-center mb-2 sm:mb-4">
-        <span className="text-4xl sm:text-5xl font-bold text-blue-600">
+        <span className="text-4xl sm:text-5xl font-bold text-blue-600 dark:text-blue-400">
           {score}
         </span>
       </div>
@@ -107,25 +111,25 @@ export default function Player({
       <div className="grid grid-cols-2 gap-1 sm:gap-2 mb-1 sm:mb-2">
         <button
           onClick={() => handleScoreChange(1, '犯规')}
-          className="bg-red-500 text-white py-2 rounded hover:bg-red-600 transition font-medium text-xs sm:text-sm"
+          className="bg-red-500 dark:bg-red-600 text-white py-2 rounded hover:bg-red-600 dark:hover:bg-red-700 transition font-medium text-xs sm:text-sm"
         >
           犯规 +1
         </button>
         <button
           onClick={() => handleScoreChange(4, '普胜')}
-          className="bg-green-500 text-white py-2 rounded hover:bg-green-600 transition font-medium text-xs sm:text-sm"
+          className="bg-green-500 dark:bg-green-600 text-white py-2 rounded hover:bg-green-600 dark:hover:bg-green-700 transition font-medium text-xs sm:text-sm"
         >
           普胜 +4
         </button>
         <button
           onClick={() => handleScoreChange(7, '小金')}
-          className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition font-medium text-xs sm:text-sm"
+          className="bg-blue-500 dark:bg-blue-600 text-white py-2 rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition font-medium text-xs sm:text-sm"
         >
           小金 +7
         </button>
         <button
           onClick={() => handleScoreChange(10, '大金')}
-          className="bg-purple-500 text-white py-2 rounded hover:bg-purple-600 transition font-medium text-xs sm:text-sm"
+          className="bg-purple-500 dark:bg-purple-600 text-white py-2 rounded hover:bg-purple-600 dark:hover:bg-purple-700 transition font-medium text-xs sm:text-sm"
         >
           大金 +10
         </button>
@@ -133,7 +137,7 @@ export default function Player({
 
       <button
         onClick={() => handleScoreChange(4, '黄金9')}
-        className="w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 transition font-medium text-xs sm:text-sm"
+        className="w-full bg-yellow-500 dark:bg-yellow-600 text-white py-2 rounded hover:bg-yellow-600 dark:hover:bg-yellow-700 transition font-medium text-xs sm:text-sm"
       >
         黄金9 +4
       </button>

@@ -661,7 +661,7 @@ export default function BilliardsGame() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-4 px-2 sm:px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-4 px-2 sm:px-4 text-gray-900 dark:text-gray-100">
       <div className="container mx-auto max-w-6xl h-full">
         {isLandscape ? renderLandscapeLayout() : renderPortraitLayout()}
 
