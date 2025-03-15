@@ -40,8 +40,10 @@ export default function BilliardsGame() {
   // 屏幕方向状态
   const [isLandscape, setIsLandscape] = useState(false)
 
-  // 是否是小屏幕设备
-  const [isSmallScreen, setIsSmallScreen] = useState(false)
+  // 设备类型状态
+  const [deviceType, setDeviceType] = useState<'desktop' | 'tablet' | 'mobile'>(
+    'desktop',
+  )
 
   // 游戏模式
   const [gameMode, setGameMode] = useState<GameMode>('两人')
@@ -88,11 +90,23 @@ export default function BilliardsGame() {
     }
   }, [players, gameMode])
 
-  // 检测屏幕方向和大小
+  // 检测屏幕方向和设备类型
   useEffect(() => {
     const checkScreen = () => {
-      setIsLandscape(window.innerWidth > window.innerHeight)
-      setIsSmallScreen(window.innerWidth < 640 || window.innerHeight < 480)
+      const width = window.innerWidth
+      const height = window.innerHeight
+
+      // 检测横屏/竖屏
+      setIsLandscape(width > height)
+
+      // 检测设备类型
+      if (width < 640) {
+        setDeviceType('mobile') // iPhone或小型手机
+      } else if (width < 1024) {
+        setDeviceType('tablet') // iPad或平板设备
+      } else {
+        setDeviceType('desktop') // 桌面或大屏设备
+      }
     }
 
     // 初始检查
@@ -204,44 +218,95 @@ export default function BilliardsGame() {
 
   // 渲染统计信息
   const renderStats = (stats: Stats, mini = false) => {
+    // 根据设备类型调整样式
+    const getStatsStyles = () => {
+      if (deviceType === 'mobile') {
+        return {
+          container: 'p-1.5',
+          title: 'text-xs mb-1',
+          item: 'text-xs py-0.5',
+        }
+      } else if (deviceType === 'tablet') {
+        return {
+          container: 'p-2',
+          title: 'text-sm mb-1.5',
+          item: 'text-xs py-0.75',
+        }
+      } else {
+        return {
+          container: 'p-2 sm:p-3',
+          title: 'text-sm sm:text-base mb-2',
+          item: 'text-xs sm:text-sm py-1',
+        }
+      }
+    }
+
+    const styles = getStatsStyles()
+
     if (mini) {
       return (
-        <div className="bg-white dark:bg-gray-800 p-1 rounded-lg shadow-md h-full flex flex-col justify-between">
-          {Object.entries(stats).map(([key, value]) => (
-            <div key={key} className="flex justify-between items-center">
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {key}
-              </span>
-              <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
-                {value}
-              </span>
+        <div className="bg-white dark:bg-gray-800 p-1 rounded-lg shadow-md text-center">
+          <div className="grid grid-cols-1 gap-0.5">
+            <div className="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded text-xs py-0.5">
+              {stats.犯规}
             </div>
-          ))}
+            <div className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs py-0.5">
+              {stats.普胜}
+            </div>
+            <div className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs py-0.5">
+              {stats.小金}
+            </div>
+            <div className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded text-xs py-0.5">
+              {stats.大金}
+            </div>
+            <div className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded text-xs py-0.5">
+              {stats.黄金9}
+            </div>
+          </div>
         </div>
       )
     }
 
     return (
-      <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-md">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-sm font-bold text-gray-800 dark:text-gray-100">
-            统计
-          </h2>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {Object.entries(stats).map(([key, value]) => (
-            <div
-              key={key}
-              className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-700 rounded"
-            >
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {key}
-              </span>
-              <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                {value}
-              </span>
-            </div>
-          ))}
+      <div
+        className={`bg-white dark:bg-gray-800 ${styles.container} rounded-lg shadow-md`}
+      >
+        <h3
+          className={`${styles.title} font-bold text-gray-700 dark:text-gray-300 text-center`}
+        >
+          统计
+        </h3>
+        <div className="grid grid-cols-1 gap-1">
+          <div
+            className={`bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded ${styles.item} px-2 flex justify-between`}
+          >
+            <span>犯规</span>
+            <span>{stats.犯规}</span>
+          </div>
+          <div
+            className={`bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded ${styles.item} px-2 flex justify-between`}
+          >
+            <span>普胜</span>
+            <span>{stats.普胜}</span>
+          </div>
+          <div
+            className={`bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded ${styles.item} px-2 flex justify-between`}
+          >
+            <span>小金</span>
+            <span>{stats.小金}</span>
+          </div>
+          <div
+            className={`bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded ${styles.item} px-2 flex justify-between`}
+          >
+            <span>大金</span>
+            <span>{stats.大金}</span>
+          </div>
+          <div
+            className={`bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded ${styles.item} px-2 flex justify-between`}
+          >
+            <span>黄金9</span>
+            <span>{stats.黄金9}</span>
+          </div>
         </div>
       </div>
     )
@@ -442,51 +507,68 @@ export default function BilliardsGame() {
 
   // 渲染控制按钮
   const renderControls = () => {
+    // 根据设备类型调整样式
+    const getControlStyles = () => {
+      if (deviceType === 'mobile') {
+        return {
+          button: 'text-xs py-1',
+          icon: 'h-3 w-3',
+        }
+      } else if (deviceType === 'tablet') {
+        return {
+          button: 'text-xs py-1.5',
+          icon: 'h-3.5 w-3.5',
+        }
+      } else {
+        return {
+          button: 'text-sm py-2',
+          icon: 'h-4 w-4',
+        }
+      }
+    }
+
+    const styles = getControlStyles()
+
     return (
-      <div className="grid grid-cols-1 gap-2">
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={() => handleUndoLastAction()}
-            className="flex items-center justify-center gap-1 p-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition w-full"
-            disabled={history.length === 0}
+      <div className="flex flex-col gap-1 sm:gap-2">
+        <button
+          onClick={() => setShowResetConfirm(true)}
+          className={`flex items-center justify-center gap-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded hover:bg-red-200 dark:hover:bg-red-800 transition ${styles.button}`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className={styles.icon}
+            viewBox="0 0 20 20"
+            fill="currentColor"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-              />
-            </svg>
-            <span className="text-xs">撤销</span>
-          </button>
-          <button
-            onClick={() => setShowResetConfirm(true)}
-            className="flex items-center justify-center gap-1 p-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 transition w-full"
+            <path
+              fillRule="evenodd"
+              d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span>重置</span>
+        </button>
+
+        <button
+          onClick={handleUndoLastAction}
+          disabled={history.length === 0}
+          className={`flex items-center justify-center gap-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-200 rounded hover:bg-yellow-200 dark:hover:bg-yellow-800 transition disabled:opacity-50 disabled:cursor-not-allowed ${styles.button}`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className={styles.icon}
+            viewBox="0 0 20 20"
+            fill="currentColor"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-            <span className="text-xs">重置</span>
-          </button>
-        </div>
+            <path
+              fillRule="evenodd"
+              d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span>撤销</span>
+        </button>
       </div>
     )
   }
@@ -520,8 +602,8 @@ export default function BilliardsGame() {
     )
   }
 
-  // iPhone横屏特殊布局
-  const renderIPhoneLandscape = () => {
+  // 移动设备横屏布局 (iPhone等)
+  const renderMobileLandscape = () => {
     const activePlayers = getActivePlayers()
 
     return (
@@ -566,6 +648,7 @@ export default function BilliardsGame() {
                       renderPlayerName(player.name, index)
                     }
                     isCompact={true}
+                    deviceType="mobile"
                   />
                 </div>
                 <div className="w-16">{renderStats(player.stats, true)}</div>
@@ -582,20 +665,15 @@ export default function BilliardsGame() {
     )
   }
 
-  // 横屏布局
-  const renderLandscapeLayout = () => {
-    // 如果是小屏幕设备（如iPhone）使用特殊布局
-    if (isSmallScreen) {
-      return renderIPhoneLandscape()
-    }
-
+  // 平板设备横屏布局 (iPad等)
+  const renderTabletLandscape = () => {
     const activePlayers = getActivePlayers()
 
     return (
       <div className="flex flex-col h-full">
         {renderHeader()}
 
-        <div className="flex flex-1 gap-3">
+        <div className="flex flex-1 gap-2">
           {/* 左侧：玩家记分板 */}
           <div className="flex-1 grid grid-cols-1 gap-2 auto-rows-min">
             {activePlayers.map((player, index) => (
@@ -611,15 +689,16 @@ export default function BilliardsGame() {
                       renderPlayerName(player.name, index)
                     }
                     isCompact={true}
+                    deviceType="tablet"
                   />
                 </div>
-                <div className="w-20 sm:w-24">{renderStats(player.stats)}</div>
+                <div className="w-20">{renderStats(player.stats)}</div>
               </div>
             ))}
           </div>
 
           {/* 右侧：控制按钮 */}
-          <div className="w-20 sm:w-24 flex flex-col justify-start gap-2">
+          <div className="w-20 flex flex-col justify-start gap-2">
             {renderControls()}
           </div>
         </div>
@@ -627,20 +706,97 @@ export default function BilliardsGame() {
     )
   }
 
+  // 桌面设备横屏布局
+  const renderDesktopLandscape = () => {
+    const activePlayers = getActivePlayers()
+
+    return (
+      <div className="flex flex-col h-full">
+        {renderHeader()}
+
+        <div className="flex flex-1 gap-4">
+          {/* 左侧：玩家记分板 */}
+          <div className="flex-1 grid grid-cols-1 gap-3 auto-rows-min">
+            {activePlayers.map((player, index) => (
+              <div key={index} className="flex gap-3">
+                <div className="flex-1">
+                  <Player
+                    name={player.name}
+                    initialScore={player.score}
+                    onScoreChange={(newScore, scoreType) =>
+                      handlePlayerScoreChange(index, newScore, scoreType)
+                    }
+                    renderNameSection={() =>
+                      renderPlayerName(player.name, index)
+                    }
+                    isCompact={false}
+                    deviceType="desktop"
+                  />
+                </div>
+                <div className="w-24">{renderStats(player.stats)}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* 右侧：控制按钮 */}
+          <div className="w-24 flex flex-col justify-start gap-3">
+            {renderControls()}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // 横屏布局 - 根据设备类型选择不同的布局
+  const renderLandscapeLayout = () => {
+    switch (deviceType) {
+      case 'mobile':
+        return renderMobileLandscape()
+      case 'tablet':
+        return renderTabletLandscape()
+      case 'desktop':
+      default:
+        return renderDesktopLandscape()
+    }
+  }
+
   // 竖屏布局
   const renderPortraitLayout = () => {
+    // 根据设备类型和游戏模式调整布局
+    const getGridCols = () => {
+      if (deviceType === 'mobile') {
+        // 移动设备始终使用单列布局
+        return 'grid-cols-1'
+      } else if (deviceType === 'tablet') {
+        // 平板设备根据游戏模式使用不同列数
+        return gameMode === '两人'
+          ? 'grid-cols-2'
+          : 'grid-cols-1 md:grid-cols-3'
+      } else {
+        // 桌面设备根据游戏模式使用不同列数
+        return gameMode === '两人' ? 'grid-cols-2' : 'grid-cols-3'
+      }
+    }
+
+    // 根据设备类型调整间距
+    const getGapSize = () => {
+      if (deviceType === 'mobile') {
+        return 'gap-2'
+      } else if (deviceType === 'tablet') {
+        return 'gap-3'
+      } else {
+        return 'gap-4'
+      }
+    }
+
     return (
       <>
         {renderHeader()}
 
         {/* 记分板区域 */}
-        <div
-          className={`grid grid-cols-1 ${
-            gameMode === '两人' ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
-          } gap-2 sm:gap-4 mb-3 sm:mb-4`}
-        >
+        <div className={`grid ${getGridCols()} ${getGapSize()} mb-3`}>
           {getActivePlayers().map((player, index) => (
-            <div key={index}>
+            <div key={index} className="flex flex-col">
               <Player
                 name={player.name}
                 initialScore={player.score}
@@ -648,14 +804,20 @@ export default function BilliardsGame() {
                   handlePlayerScoreChange(index, newScore, scoreType)
                 }
                 renderNameSection={() => renderPlayerName(player.name, index)}
+                deviceType={deviceType}
+                isCompact={deviceType !== 'desktop'}
               />
-              <div className="mt-1 sm:mt-2">{renderStats(player.stats)}</div>
+              <div className="mt-2">
+                {renderStats(player.stats, deviceType === 'mobile')}
+              </div>
             </div>
           ))}
         </div>
 
         {/* 控制按钮 */}
-        {renderControls()}
+        <div className={deviceType === 'mobile' ? 'w-full' : 'w-1/2 mx-auto'}>
+          {renderControls()}
+        </div>
       </>
     )
   }
