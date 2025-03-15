@@ -206,66 +206,42 @@ export default function BilliardsGame() {
   const renderStats = (stats: Stats, mini = false) => {
     if (mini) {
       return (
-        <div className="bg-gray-50 p-1 rounded text-xs">
-          <div className="grid grid-cols-5 gap-0 text-center">
-            <div>
-              <div className="font-medium text-red-600 text-[8px]">犯</div>
-              <div className="font-bold">{stats.犯规}</div>
+        <div className="bg-white dark:bg-gray-800 p-1 rounded-lg shadow-md h-full flex flex-col justify-between">
+          {Object.entries(stats).map(([key, value]) => (
+            <div key={key} className="flex justify-between items-center">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {key}
+              </span>
+              <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                {value}
+              </span>
             </div>
-            <div>
-              <div className="font-medium text-green-600 text-[8px]">普</div>
-              <div className="font-bold">{stats.普胜}</div>
-            </div>
-            <div>
-              <div className="font-medium text-blue-600 text-[8px]">小</div>
-              <div className="font-bold">{stats.小金}</div>
-            </div>
-            <div>
-              <div className="font-medium text-purple-600 text-[8px]">大</div>
-              <div className="font-bold">{stats.大金}</div>
-            </div>
-            <div>
-              <div className="font-medium text-yellow-600 text-[8px]">9</div>
-              <div className="font-bold">{stats.黄金9}</div>
-            </div>
-          </div>
+          ))}
         </div>
       )
     }
 
     return (
-      <div className="bg-gray-50 p-1 sm:p-2 rounded-lg text-sm">
-        <div className="grid grid-cols-5 gap-1 text-center">
-          <div>
-            <div className="font-medium text-red-600 text-[10px] sm:text-xs">
-              犯规
+      <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-md">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-sm font-bold text-gray-800 dark:text-gray-100">
+            统计
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {Object.entries(stats).map(([key, value]) => (
+            <div
+              key={key}
+              className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-700 rounded"
+            >
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {key}
+              </span>
+              <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                {value}
+              </span>
             </div>
-            <div className="text-sm sm:text-base font-bold">{stats.犯规}</div>
-          </div>
-          <div>
-            <div className="font-medium text-green-600 text-[10px] sm:text-xs">
-              普胜
-            </div>
-            <div className="text-sm sm:text-base font-bold">{stats.普胜}</div>
-          </div>
-          <div>
-            <div className="font-medium text-blue-600 text-[10px] sm:text-xs">
-              小金
-            </div>
-            <div className="text-sm sm:text-base font-bold">{stats.小金}</div>
-          </div>
-          <div>
-            <div className="font-medium text-purple-600 text-[10px] sm:text-xs">
-              大金
-            </div>
-            <div className="text-sm sm:text-base font-bold">{stats.大金}</div>
-          </div>
-          <div>
-            <div className="font-medium text-yellow-600 text-[10px] sm:text-xs">
-              黄金9
-            </div>
-            <div className="text-sm sm:text-base font-bold">{stats.黄金9}</div>
-          </div>
+          ))}
         </div>
       </div>
     )
@@ -276,24 +252,26 @@ export default function BilliardsGame() {
     if (!showResetConfirm) return null
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
-          <h3 className="text-lg sm:text-xl font-bold mb-3">确认重置</h3>
-          <p className="mb-4 text-sm sm:text-base">
-            确定要重置所有分数和统计数据吗？此操作无法撤销。
+      <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-md w-full mx-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            重置游戏
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            确定要重置游戏吗？所有玩家的分数将归零。
           </p>
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end">
             <button
               onClick={() => setShowResetConfirm(false)}
-              className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 transition text-sm font-medium"
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition mr-2"
             >
               取消
             </button>
             <button
               onClick={handleResetGame}
-              className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm font-medium"
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 dark:hover:bg-red-700 transition"
             >
-              确认重置
+              确定重置
             </button>
           </div>
         </div>
@@ -306,39 +284,48 @@ export default function BilliardsGame() {
     if (editingName === null) return null
 
     const currentName = players[editingName].name
-    let inputRef: HTMLInputElement | null = null
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
-          <h3 className="text-lg sm:text-xl font-bold mb-3">修改玩家名称</h3>
+      <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-md w-full mx-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            编辑玩家名称
+          </h2>
           <form
             onSubmit={(e) => {
               e.preventDefault()
-              if (inputRef) handleNameChange(editingName, inputRef.value)
+              const form = e.currentTarget
+              const nameInput = form.elements.namedItem(
+                'playerName',
+              ) as HTMLInputElement
+              if (nameInput && nameInput.value.trim()) {
+                handleNameChange(editingName, nameInput.value.trim())
+                setEditingName(null)
+              }
             }}
-            className="mb-2"
           >
-            <input
-              type="text"
-              ref={(el) => {
-                inputRef = el
-              }}
-              defaultValue={currentName}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 text-sm"
-              onFocus={(e) => e.target.select()}
-            />
-            <div className="flex justify-end gap-2">
+            <div className="mb-4">
+              <input
+                type="text"
+                name="playerName"
+                id="playerName"
+                autoComplete="off"
+                defaultValue={currentName}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4 text-sm dark:bg-gray-700 dark:text-white"
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
+            <div className="flex justify-end">
               <button
                 type="button"
                 onClick={() => setEditingName(null)}
-                className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 transition text-sm font-medium"
+                className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition text-sm font-medium mr-2"
               >
                 取消
               </button>
               <button
                 type="submit"
-                className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm font-medium"
+                className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition text-sm font-medium"
               >
                 保存
               </button>
@@ -354,54 +341,71 @@ export default function BilliardsGame() {
     if (!showModeSelector) return null
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
-          <h3 className="text-lg sm:text-xl font-bold mb-3">选择游戏模式</h3>
-          <div className="grid grid-cols-2 gap-3 mb-4">
+      <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-md w-full mx-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            选择游戏模式
+          </h2>
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <button
               onClick={() => switchGameMode('两人')}
-              className={`p-3 rounded-lg border-2 flex flex-col items-center ${
+              className={`p-4 rounded-lg border-2 ${
                 gameMode === '两人'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-              }`}
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-400'
+                  : 'border-gray-200 dark:border-gray-700'
+              } flex flex-col items-center justify-center`}
             >
-              <div className="flex gap-1 mb-1">
-                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs">
-                  1
-                </div>
-                <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xs">
-                  2
-                </div>
-              </div>
-              <span className="text-sm font-medium">两人模式</span>
+              <span
+                className={`text-lg font-bold ${
+                  gameMode === '两人'
+                    ? 'text-blue-600 dark:text-blue-300'
+                    : 'text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                两人模式
+              </span>
+              <span
+                className={`text-sm ${
+                  gameMode === '两人'
+                    ? 'text-blue-500 dark:text-blue-400'
+                    : 'text-gray-500 dark:text-gray-400'
+                }`}
+              >
+                两名玩家对战
+              </span>
             </button>
             <button
               onClick={() => switchGameMode('三人')}
-              className={`p-3 rounded-lg border-2 flex flex-col items-center ${
+              className={`p-4 rounded-lg border-2 ${
                 gameMode === '三人'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-              }`}
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-400'
+                  : 'border-gray-200 dark:border-gray-700'
+              } flex flex-col items-center justify-center`}
             >
-              <div className="flex gap-1 mb-1">
-                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs">
-                  1
-                </div>
-                <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xs">
-                  2
-                </div>
-                <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-xs">
-                  3
-                </div>
-              </div>
-              <span className="text-sm font-medium">三人模式</span>
+              <span
+                className={`text-lg font-bold ${
+                  gameMode === '三人'
+                    ? 'text-blue-600 dark:text-blue-300'
+                    : 'text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                三人模式
+              </span>
+              <span
+                className={`text-sm ${
+                  gameMode === '三人'
+                    ? 'text-blue-500 dark:text-blue-400'
+                    : 'text-gray-500 dark:text-gray-400'
+                }`}
+              >
+                三名玩家对战
+              </span>
             </button>
           </div>
           <div className="flex justify-end">
             <button
               onClick={() => setShowModeSelector(false)}
-              className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 transition text-sm font-medium"
+              className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition"
             >
               关闭
             </button>
@@ -415,12 +419,12 @@ export default function BilliardsGame() {
   const renderPlayerName = (name: string, playerIndex: number) => {
     return (
       <div className="flex items-center gap-1">
-        <h2 className="text-sm sm:text-base font-bold text-gray-800 truncate">
+        <h2 className="text-sm sm:text-base font-bold text-gray-800 dark:text-gray-100 truncate">
           {name}
         </h2>
         <button
           onClick={() => setEditingName(playerIndex)}
-          className="text-gray-500 hover:text-blue-500 transition p-1"
+          className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs"
           title="编辑名称"
         >
           <svg
@@ -442,50 +446,45 @@ export default function BilliardsGame() {
       <div className="grid grid-cols-1 gap-2">
         <div className="grid grid-cols-2 gap-2">
           <button
-            onClick={handleUndoLastAction}
+            onClick={() => handleUndoLastAction()}
+            className="flex items-center justify-center gap-1 p-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition w-full"
             disabled={history.length === 0}
-            className={`py-2 px-2 rounded flex items-center justify-center font-medium transition text-xs ${
-              history.length === 0
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
               <path
-                fillRule="evenodd"
-                d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
               />
             </svg>
-            撤销
+            <span className="text-xs">撤销</span>
           </button>
           <button
             onClick={() => setShowResetConfirm(true)}
-            disabled={players.every((p) => p.score === 0)}
-            className={`py-2 px-2 rounded flex items-center justify-center font-medium transition text-xs ${
-              players.every((p) => p.score === 0)
-                ? 'bg-red-100 text-red-300 cursor-not-allowed'
-                : 'bg-red-100 text-red-600 hover:bg-red-200'
-            }`}
+            className="flex items-center justify-center gap-1 p-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 transition w-full"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
               <path
-                fillRule="evenodd"
-                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                clipRule="evenodd"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
-            重置
+            <span className="text-xs">重置</span>
           </button>
         </div>
       </div>
@@ -496,12 +495,12 @@ export default function BilliardsGame() {
   const renderHeader = () => {
     return (
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-1 sm:gap-0">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center sm:text-left">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 text-center sm:text-left">
           九球追分记分板
         </h1>
         <button
           onClick={() => setShowModeSelector(true)}
-          className="flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition w-full sm:w-auto text-sm"
+          className="flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-700 transition w-full sm:w-auto text-sm"
         >
           <span>{gameMode}模式</span>
           <svg
@@ -528,10 +527,12 @@ export default function BilliardsGame() {
     return (
       <div className="flex flex-col h-full">
         <div className="flex justify-between items-center mb-1">
-          <h1 className="text-lg font-bold text-gray-800">九球追分记分板</h1>
+          <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+            九球追分记分板
+          </h1>
           <button
             onClick={() => setShowModeSelector(true)}
-            className="flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition text-xs"
+            className="flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-700 transition text-xs"
           >
             <span>{gameMode}模式</span>
             <svg
@@ -660,7 +661,7 @@ export default function BilliardsGame() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-2 sm:py-4 px-2 sm:px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-2 sm:py-4 px-2 sm:px-4">
       <div className="container mx-auto max-w-6xl h-full">
         {isLandscape ? renderLandscapeLayout() : renderPortraitLayout()}
 
