@@ -33,6 +33,9 @@ interface HistoryEntry {
 // 游戏模式类型
 type GameMode = '两人' | '三人'
 
+// 本地存储键
+const STORAGE_KEY = 'billiardsGameData'
+
 export default function BilliardsGame() {
   // 屏幕方向状态
   const [isLandscape, setIsLandscape] = useState(false)
@@ -54,6 +57,36 @@ export default function BilliardsGame() {
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [editingName, setEditingName] = useState<number | null>(null)
   const [showModeSelector, setShowModeSelector] = useState(false)
+
+  // 从本地存储加载数据
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem(STORAGE_KEY)
+      if (savedData) {
+        const { players: savedPlayers, gameMode: savedGameMode } =
+          JSON.parse(savedData)
+        setPlayers(savedPlayers)
+        setGameMode(savedGameMode)
+      }
+    } catch (error) {
+      console.error('Failed to load data from localStorage:', error)
+    }
+  }, [])
+
+  // 保存数据到本地存储
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          players,
+          gameMode,
+        }),
+      )
+    } catch (error) {
+      console.error('Failed to save data to localStorage:', error)
+    }
+  }, [players, gameMode])
 
   // 检测屏幕方向和大小
   useEffect(() => {
@@ -406,15 +439,58 @@ export default function BilliardsGame() {
   // 渲染控制按钮
   const renderControls = () => {
     return (
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={handleUndoLastAction}
+            disabled={history.length === 0}
+            className={`py-2 px-2 rounded flex items-center justify-center font-medium transition text-xs ${
+              history.length === 0
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+            撤销
+          </button>
+          <button
+            onClick={() => setShowResetConfirm(true)}
+            disabled={players.every((p) => p.score === 0)}
+            className={`py-2 px-2 rounded flex items-center justify-center font-medium transition text-xs ${
+              players.every((p) => p.score === 0)
+                ? 'bg-red-100 text-red-300 cursor-not-allowed'
+                : 'bg-red-100 text-red-600 hover:bg-red-200'
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                clipRule="evenodd"
+              />
+            </svg>
+            重置
+          </button>
+        </div>
         <button
-          onClick={handleUndoLastAction}
-          disabled={history.length === 0}
-          className={`py-2 px-2 rounded flex items-center justify-center font-medium transition text-xs ${
-            history.length === 0
-              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-          }`}
+          onClick={handleClearLocalStorage}
+          className="py-2 px-2 rounded flex items-center justify-center font-medium transition text-xs bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -424,34 +500,11 @@ export default function BilliardsGame() {
           >
             <path
               fillRule="evenodd"
-              d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
               clipRule="evenodd"
             />
           </svg>
-          撤销
-        </button>
-        <button
-          onClick={() => setShowResetConfirm(true)}
-          disabled={players.every((p) => p.score === 0)}
-          className={`py-2 px-2 rounded flex items-center justify-center font-medium transition text-xs ${
-            players.every((p) => p.score === 0)
-              ? 'bg-red-100 text-red-300 cursor-not-allowed'
-              : 'bg-red-100 text-red-600 hover:bg-red-200'
-          }`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 mr-1"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-              clipRule="evenodd"
-            />
-          </svg>
-          重置
+          清除存储
         </button>
       </div>
     )
@@ -622,6 +675,20 @@ export default function BilliardsGame() {
         {renderControls()}
       </>
     )
+  }
+
+  // 清除本地存储数据
+  const handleClearLocalStorage = () => {
+    if (confirm('确定要清除所有存储的数据吗？这将删除所有玩家名称和分数。')) {
+      localStorage.removeItem(STORAGE_KEY)
+      setPlayers([
+        { name: '玩家 1', score: 0, stats: createEmptyStats() },
+        { name: '玩家 2', score: 0, stats: createEmptyStats() },
+        { name: '玩家 3', score: 0, stats: createEmptyStats() },
+      ])
+      setHistory([])
+      setShowResetConfirm(false)
+    }
   }
 
   return (
