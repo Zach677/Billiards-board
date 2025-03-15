@@ -576,13 +576,10 @@ export default function BilliardsGame() {
   // 渲染标题和模式切换按钮
   const renderHeader = () => {
     return (
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-1 sm:gap-0">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 text-center sm:text-left">
-          九球追分记分板
-        </h1>
+      <div className="flex justify-end mb-2">
         <button
           onClick={() => setShowModeSelector(true)}
-          className="flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-700 transition w-full sm:w-auto text-sm"
+          className="flex items-center justify-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-700 transition w-auto text-sm"
         >
           <span>{gameMode}模式</span>
           <svg
