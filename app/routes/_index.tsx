@@ -1,5 +1,5 @@
 import type { MetaFunction } from '@remix-run/node'
-import BilliardsGame from '~/components/BilliardsGame'
+import { BilliardsGame } from '~/components'
 
 export const meta: MetaFunction = () => {
   return [
